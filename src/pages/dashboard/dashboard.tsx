@@ -4,16 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import Header from './components/header/Header'
 import { Statistic, FlexRow, Body, Container } from './dashboard.styled'
-import NewGraph, { GraphItem } from './components/graph/Graph'
+import Graph from './components/graph/Graph'
+import { GraphItem, TitleT, statisticT } from './dashboard.types'
 
-const colors: any = ['', '#E96863', '#FFC107', '#3BAAB0', '#b8b8b8']
-type TitleT = 'scenarios' | 'dialogs' | 'lists'
-type statisticT = {
-  id: string
-  title: string
-  value: number
-}
-const TITLE = {
+export const TITLE = {
   scenarios: 'Сценарии',
   dialogs: 'Списки',
   lists: 'Диалоги',
@@ -26,14 +20,13 @@ const DashboardElement = ({ data, name }: { data: any; name: TitleT }) => {
     id: name,
     title: TITLE[name],
     value: total,
+    color: '',
   }
-
   const [hover, setHover] = useState<statisticT>(mainView)
 
   const setDefaultHover = () => hover?.title !== mainView.title && setHover(mainView)
 
   const handleGraphHover = (data: GraphItem) => {
-    console.log(data)
     const newHover = statistic.find((item) => item.id === data?.name)
     if (!newHover) return
     setHover(newHover)
@@ -43,40 +36,42 @@ const DashboardElement = ({ data, name }: { data: any; name: TitleT }) => {
       id: 'total',
       title: 'Всего:',
       value: total || 0,
+      color: 'lightgrey',
     },
     {
       id: 'active',
       title: 'Активных:',
       value: data?.active || 0,
+      color: '#FFC107',
     },
     {
       id: 'inactive',
       title: 'Неактивных:',
       value: data?.inactive || 0,
+      color: '#E96863',
     },
     {
       id: 'completed',
       title: 'Завершенных:',
       value: data?.completed || 0,
+      color: '#3BAAB0',
     },
   ]
 
-  const ref = useRef(null)
-
   return (
     <Container>
-      <NewGraph
+      <Graph
         setDefaultHover={setDefaultHover}
         handleHover={handleGraphHover}
         hover={hover}
         name={name}
-        item={data}
+        items={statistic}
       />
       <Statistic data-animch='6'>
-        {statistic.map((el, index) => (
+        {statistic.map((el) => (
           <FlexRow
             selected={el.id === hover?.id ? 'true' : 'false'}
-            hoverColor={colors[index]}
+            hoverColor={el.color}
             onMouseOut={() => setDefaultHover()}
             onMouseOver={() => setHover(el)}
           >
@@ -94,11 +89,12 @@ const Dashboard = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const token = localStorage.getItem('token') || ''
-    if (token && !error) return
+    if (!error) return
     localStorage.removeItem('token')
     navigate('/login')
   }, [error])
+
+  if (!data?.dashboard) return <></>
 
   return (
     <>

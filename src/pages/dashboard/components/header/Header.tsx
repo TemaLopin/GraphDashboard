@@ -20,10 +20,16 @@ const HeaderContainer = styled.div`
     cursor: pointer;
     align-items: center;
 
+    transition: all 0.3s;
+    border-bottom: 1px solid #fff;
+
     svg {
       margin-left: 10px;
       width: 20px;
       height: 20px;
+    }
+    &:hover {
+      border-bottom: 1px solid #000;
     }
   }
 `

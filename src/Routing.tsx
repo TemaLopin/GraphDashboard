@@ -4,6 +4,7 @@ import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink } from '@ap
 import { setContext } from '@apollo/client/link/context'
 import Dashboard from './pages/dashboard/dashboard'
 import DynamicStyle from './components/dynamicStyles'
+import PrivateRoute from './PrivateRoutes'
 
 const httpLink = createHttpLink({
   uri: 'https://graphql-demo.dev.aicall.ru/graphql',
@@ -28,11 +29,10 @@ const Routing = () => {
     <ApolloProvider client={client}>
       <DynamicStyle />
       <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Navigate to={'/login'} />} />
+        <PrivateRoute>
           <Route path='/login' element={<Authorization />} />
           <Route path='/dashboard' element={<Dashboard />} />
-        </Routes>
+        </PrivateRoute>
       </BrowserRouter>
       <script src='https://cdn.jsdelivr.net/npm/chart.js'></script>
     </ApolloProvider>

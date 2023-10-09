@@ -1,73 +1,39 @@
-import styled from 'styled-components'
-import styledMUI from '@emotion/styled'
-import CircularProgressWithLabel from '@mui/material/CircularProgress'
 import { Label, CircleProgress, Body } from './graph.styled'
-import { useRef } from 'react'
+import { GraphItem, statisticT } from '../../dashboard.types'
+import { TITLE } from '../../dashboard'
 
-const colors = ['#E96863', '#FFC107', '#3BAAB0', '#b8b8b8']
-
-const TITLE: { [key: string]: string } = {
-  scenarios: 'Сценарии',
-  dialogs: 'Списки',
-  lists: 'Диалоги',
-}
-
-type statisticT = {
-  id: string
-  title: string
-  value: number
-}
-export type GraphItem = {
-  perc: number
-  color: string
-  zIndex: number
-  name: string
-  endDeg: number
-  startDeg: number
-}
-
-const NewGraph = ({
-  item = {},
+const Graph = ({
+  items = [],
   name,
-  hover = { id: '', title: '', value: 0 },
+  hover,
   handleHover,
   setDefaultHover,
 }: {
   handleHover: (data: GraphItem) => void
   setDefaultHover: () => void
   hover: statisticT
-  name: string
-  item: { [key: string]: number }
+  name: 'scenarios' | 'dialogs' | 'lists'
+  items: statisticT[]
 }) => {
-  const sortedItem = Object.entries(item).sort((a: any, b: any) => (a[1] > b[1] ? 1 : -1))
-  const total = (item?.active || 0) + (item?.completed || 0) + (item?.inactive || 0) || 0
+  const sortedItem = items.sort((a, b) => (a.value > b.value ? 1 : -1))
+  const total = items.find((item) => item.id === 'total')?.value
 
-  const hasHover = !!item[hover?.id] || hover?.id === 'total'
-  
+  const hoverColor = items.find((it) => it.id === hover?.id)?.color
+  const hasHover = items.some((item) => item.id === hover?.id)
 
   let endDeg = 0
   let startDeg = 0
 
-  const graphData = sortedItem.map(([name, value], index) => {
+  const graphData = sortedItem.map(({ value, id, color }) => {
     const perc = Math.round(100 * ((value || 0) / (total || 1)))
 
     startDeg = endDeg
     endDeg = perc
 
-    const color = colors[index]
+    const name = id
     const zIndex = -perc
     return { perc, color, zIndex, name, endDeg, startDeg }
   })
-
-  const totalProgress = {
-    name: 'total',
-    perc: 100,
-    color: 'lightgrey',
-    zIndex: -100,
-    startDeg: 0,
-    endDeg: 0,
-  }
-
 
   const calcAngle = (x0: number, y0: number, x1: number, y1: number) => {
     return Math.atan2(y1 - y0, x1 - x0)
@@ -76,14 +42,12 @@ const NewGraph = ({
   const radiansToDegrees = (radians: number) => {
     return radians * (180 / Math.PI)
   }
-  const hoverIndex = graphData?.findIndex((it: any) => it?.name === hover?.id)
-
 
   return (
     <Body
-      // data-animch='6'
+      data-animch='3'
       onMouseOut={() => setDefaultHover()}
-      onMouseMove={(e: any) => {
+      onMouseMove={(e) => {
         if (hasHover) return
         const x1 = e.nativeEvent.offsetX
         const y1 = e.nativeEvent.offsetY
@@ -94,11 +58,11 @@ const NewGraph = ({
         handleHover(t)
       }}
     >
-      <Label color={colors[hoverIndex]}>
-        <p>{hover?.title || TITLE[name || '']}</p>
+      <Label color={hoverColor || ''}>
+        <p>{hover?.title || TITLE[name]}</p>
         <span>{hover?.value || ''}</span>
       </Label>
-      {([totalProgress, ...graphData] || []).map((it, ind) => {
+      {(graphData || []).map((it, ind) => {
         return (
           <CircleProgress
             key={ind}
@@ -119,4 +83,4 @@ const NewGraph = ({
   )
 }
 
-export default NewGraph
+export default Graph

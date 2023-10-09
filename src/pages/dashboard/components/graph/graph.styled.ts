@@ -36,4 +36,26 @@ export const Body = styled.div`
   justify-content: center;
   position: relative;
   transition: all 1s;
+
+  border-radius: 50%;
+
+  &::before {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    border-radius: 50%;
+    background: #00000009;
+    z-index: -100;
+  }
+
+  &::after {
+    content: '';
+    width: 90%;
+    height: 90%;
+    position: absolute;
+    border-radius: 50%;
+    background-color: #fff;
+    z-index: -100;
+  }
 `

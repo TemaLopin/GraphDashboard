@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 
-function DynamicStyle(props: any) {
-  console.log('*........ ## ROOT RENDER', props)
-
+function DynamicStyle() {
   let arr = new Array(24).fill(1).map((it, ind) => ind)
   let DELAY = 100
-  console.log('*........ ## ROOT RENDER', arr)
 
   let styleText = `
     

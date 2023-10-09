@@ -70,6 +70,7 @@ const DashboardElement = ({ data, name }: { data: any; name: TitleT }) => {
       <Statistic data-animch='6'>
         {statistic.map((el) => (
           <FlexRow
+            key={el.id}
             selected={el.id === hover?.id ? 'true' : 'false'}
             hoverColor={el.color}
             onMouseOut={() => setDefaultHover()}
